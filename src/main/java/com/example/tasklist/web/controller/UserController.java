@@ -34,15 +34,13 @@ public class UserController {
         return userMapper.toDto(user);
     }
 
-    @PostMapping("/create")
-    public UserDto create(@RequestBody @Valid UserDto userDto) {
-
-        checkData(userDto);
-
-        User user = userMapper.toEntity(userDto);
-        User newUser = userService.create(user);
-        return userMapper.toDto(newUser);
+    @GetMapping("/task-author/{taskId}")
+    public UserDto getTaskAuthor(@PathVariable Long taskId) {
+        User user = userService.getTaskAuthor(taskId);
+        return userMapper.toDto(user);
     }
+
+
 
     @PostMapping("/{id}/tasks")
     public TaskDto createTask(@PathVariable Long id,
@@ -57,7 +55,7 @@ public class UserController {
     @PutMapping
     public UserDto update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
 
-        checkData(userDto);
+
 
         User user = userMapper.toEntity(userDto);
         User updatedUser = userService.update(user);
@@ -75,11 +73,6 @@ public class UserController {
         userService.delete(id);
     }
 
-    private void checkData(UserDto userDto) {
-        if (!userDto.getPassword().equals(userDto.getPasswordConfirmation()))
-            throw new IllegalStateException("Passwords do not match");
-        if (userService.getByUsername(userDto.getUsername()) != null)
-            throw new IllegalStateException("Username already exists");
-    }
+
 
 }
