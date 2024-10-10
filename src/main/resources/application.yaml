@@ -1,0 +1,24 @@
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:liquibase/db.changelog-master.yaml
+    enabled: true
+    default-schema: tasklist
+server:
+  port: ${PORT}
+
+security:
+  jwt:
+    secret: ${SECRET_KEY}
+    access: ${JWT_ACCESS_TIME}
+    refresh: ${JWT_REFRESH_TIME}
+

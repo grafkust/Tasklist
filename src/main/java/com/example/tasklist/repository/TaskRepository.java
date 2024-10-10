@@ -13,15 +13,11 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     String FIND_ALL_BY_USER_ID = """
-            SELECT * FROM tasks t
-            JOIN users_tasks ut ON ut.task_id = t.id
+            SELECT * FROM tasks t JOIN users_tasks ut ON ut.task_id = t.id
             WHERE ut.user_id = :userId
             """;
 
-    String ASSIGN_TASK = """
-            INSERT INTO users_tasks (user_id, task_id)
-            VALUES (:userId, :taskId)
-            """;
+    String ASSIGN_TASK = "INSERT INTO users_tasks (user_id, task_id) VALUES (:userId, :taskId)";
 
     @Query(value = FIND_ALL_BY_USER_ID, nativeQuery = true)
     List<Task> findAllByUserId(@Param("userId") Long userId);

@@ -16,21 +16,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
             u.name as name,
             u.username as username,
             u.password as password
-            FROM users_tasks ut
-            JOIN users u ON ut.user_id = u.id
-            WHERE ut.task_id = :taskId
+            FROM users_tasks ut JOIN users u ON ut.user_id = u.id WHERE ut.task_id = :taskId
             """;
 
-    String IS_TASK_OWNER = """
-            SELECT exists(SELECT 1 FROM users_tasks WHERE user_id = :userId AND task_id = :taskId)""";
-
-
+    String IS_TASK_OWNER = "SELECT exists(SELECT 1 FROM users_tasks WHERE user_id = :userId AND task_id = :taskId)";
 
     Optional<User> findByUsername(String username);
 
     Optional<User> findById(Long id);
-
-    User saveAndFlush(User user);
 
     @Query(value = FIND_TASK_AUTHOR, nativeQuery = true)
     Optional<User> findTaskAuthor(@Param("taskId") Long taskId);
