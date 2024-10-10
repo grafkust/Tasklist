@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
 import java.util.Set;
 
@@ -30,16 +31,14 @@ public class User {
     @Transient
     private String passwordConfirmation;
 
-
-    @Column(name = "role", nullable = false)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "users_roles")
+    @Column(name = "role", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Set<Role> roles;
 
-
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "task_id"))
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_tasks", inverseJoinColumns = @JoinColumn(name = "task_id"))
     private List<Task> tasks;
 
 }

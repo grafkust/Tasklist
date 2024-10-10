@@ -37,6 +37,7 @@
 		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 		<jakarta-validation.version>3.1.0</jakarta-validation.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<modelmapper.version>3.2.1</modelmapper.version>
 	</properties>
 
 	<dependencies>
@@ -95,6 +96,8 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>${mapstruct.version}</version>
 		</dependency>
+
+
 
 
 		<dependency>

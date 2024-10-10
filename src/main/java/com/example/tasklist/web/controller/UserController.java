@@ -10,7 +10,6 @@ import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
 import com.example.tasklist.web.mapper.TaskMapper;
 import com.example.tasklist.web.mapper.UserMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

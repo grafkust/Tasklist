@@ -36,17 +36,14 @@ public class ApplicationConfig {
 
     @Bean
     @SneakyThrows
-    public AuthenticationManager authenticationManager(
-            final AuthenticationConfiguration configuration
-    ) {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
     @SneakyThrows
-    public SecurityFilterChain filterChain(
-            final HttpSecurity httpSecurity
-    ) {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
+
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
