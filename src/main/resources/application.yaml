@@ -22,3 +22,6 @@ security:
 
 server:
   port: ${PORT}
+
+springdoc:
+  override-with-generic-response: false

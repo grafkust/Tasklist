@@ -8,6 +8,7 @@ import com.example.tasklist.service.UserService;
 import com.example.tasklist.web.mapper.UserMapper;
 import com.example.tasklist.domain.model.jwt.JwtRequest;
 import com.example.tasklist.domain.model.jwt.JwtResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
 
     private final AuthService authService;

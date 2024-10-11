@@ -10,6 +10,7 @@ import com.example.tasklist.service.TaskService;
 import com.example.tasklist.service.UserService;
 import com.example.tasklist.web.mapper.TaskMapper;
 import com.example.tasklist.web.mapper.UserMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "User Controller")
 public class UserController {
 
     private final UserService userService;

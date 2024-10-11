@@ -1,9 +1,14 @@
+networks:
+  app-network:
+    driver: bridge
 
 services:
   app:
     build:
       context: .
     container_name: tasklist
+    networks:
+      - app-network
     depends_on:
       - db
     env_file:
@@ -12,28 +17,25 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${DB_NAME}?currentSchema=${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
     ports:
       - '8085:8080'
 
   db:
       image: mysql:9.0.0
       container_name: mySQL
+      networks:
+        - app-network
       environment:
         MYSQL_DATABASE: ${DB_NAME}
         MYSQL_USERNAME: ${DB_USERNAME}
         MYSQL_PASSWORD: ${DB_PASSWORD}
       ports:
         - '3306:3306'
+
       volumes:
         - './src/main/resources/db-init:/docker-entrypoint-initdb.d'
         - 'db-data:/var/lib/mysql'
 
 volumes:
   db-data:
-
-
-
-
-
-
-
