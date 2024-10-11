@@ -13,8 +13,6 @@ spring:
     change-log: classpath:liquibase/db.changelog-master.yaml
     enabled: true
     default-schema: tasklist
-server:
-  port: ${PORT}
 
 security:
   jwt:
@@ -22,3 +20,5 @@ security:
     access: ${JWT_ACCESS_TIME}
     refresh: ${JWT_REFRESH_TIME}
 
+server:
+  port: ${PORT}

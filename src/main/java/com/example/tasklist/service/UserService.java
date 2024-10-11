@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,6 +30,18 @@ public class UserService {
     }
 
     public User update(User user) {
+
+        Long id = user.getId();
+        String oldUsername = getById(id).getUsername();
+
+        if (!user.getUsername().equals(oldUsername)) {
+            if (userRepository.findByUsername(user.getUsername()).isPresent())
+                throw new IllegalStateException("A user with this username already exists");
+        }
+
+        if (!user.getPassword().equals(user.getPasswordConfirmation()))
+            throw new IllegalStateException("The password and the confirmation of the password do not match");
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -53,8 +67,8 @@ public class UserService {
 
     private void checkData(User user) {
         if (!user.getPassword().equals(user.getPasswordConfirmation()))
-            throw new IllegalStateException("Passwords do not match");
+            throw new IllegalStateException("The password and the confirmation of the password do not match");
         if (userRepository.findByUsername(user.getUsername()).isPresent())
-            throw new IllegalStateException("Username already exists");
+            throw new IllegalStateException("A user with this username already exists");
     }
 }

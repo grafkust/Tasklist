@@ -11,6 +11,7 @@ import com.example.tasklist.service.UserService;
 import com.example.tasklist.web.mapper.TaskMapper;
 import com.example.tasklist.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class UserController {
     private final TaskMapper taskMapper;
 
     @GetMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public UserDto getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return userMapper.toDto(user);
@@ -42,6 +44,7 @@ public class UserController {
 
 
     @PostMapping("/{id}/tasks")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public TaskDto createTask(@PathVariable Long id,
                               @Validated(OnCreate.class) @RequestBody TaskDto taskDto) {
         Task newTask = taskMapper.toEntity(taskDto);
@@ -52,9 +55,8 @@ public class UserController {
     }
 
     @PutMapping
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userDto.id)")
     public UserDto update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
-
-
 
         User user = userMapper.toEntity(userDto);
         User updatedUser = userService.update(user);
@@ -62,14 +64,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tasks")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public List<TaskDto> getTasksByUserId(@PathVariable Long id){
         List <Task> tasks = taskService.getAllByUserId(id);
         return taskMapper.toDto(tasks);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
-        userService.delete(id);
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    public void deleteById(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 
 
