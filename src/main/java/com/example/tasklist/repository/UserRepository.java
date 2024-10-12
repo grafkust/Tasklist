@@ -29,7 +29,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findTaskAuthor(@Param("taskId") Long taskId);
 
     @Query(value = IS_TASK_OWNER, nativeQuery = true)
-    boolean isTaskOwner(@Param("userId") Long userId, @Param("taskId") Long taskId);
-
-    void deleteByUsername(String username);
+    Long isTaskOwner(@Param("userId") Long userId, @Param("taskId") Long taskId);
 }

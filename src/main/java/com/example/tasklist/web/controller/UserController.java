@@ -31,22 +31,14 @@ public class UserController {
     private final TaskMapper taskMapper;
 
     @GetMapping("/{id}")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+    @PreAuthorize("@cse.canAccessUser(#id)")
     public UserDto getById(@PathVariable Long id) {
         User user = userService.getById(id);
         return userMapper.toDto(user);
     }
 
-    @GetMapping("/task-author/{taskId}")
-    public UserDto getTaskAuthor(@PathVariable Long taskId) {
-        User user = userService.getTaskAuthor(taskId);
-        return userMapper.toDto(user);
-    }
-
-
-
     @PostMapping("/{id}/tasks")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+    @PreAuthorize("@cse.canAccessUser(#id)")
     public TaskDto createTask(@PathVariable Long id,
                               @Validated(OnCreate.class) @RequestBody TaskDto taskDto) {
         Task newTask = taskMapper.toEntity(taskDto);
@@ -57,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#userDto.id)")
+    @PreAuthorize("@cse.canAccessUser(#userDto.id)")
     public UserDto update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
 
         User user = userMapper.toEntity(userDto);
@@ -66,14 +58,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tasks")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+    @PreAuthorize("@cse.canAccessUser(#id)")
     public List<TaskDto> getTasksByUserId(@PathVariable Long id){
         List <Task> tasks = taskService.getAllByUserId(id);
         return taskMapper.toDto(tasks);
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#userId)")
+    @PreAuthorize("@cse.canAccessUser(#userId)")
     public void deleteById(@PathVariable Long userId) {
         userService.delete(userId);
     }

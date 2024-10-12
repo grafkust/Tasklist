@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -21,12 +22,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(value = FIND_ALL_BY_USER_ID, nativeQuery = true)
     List<Task> findAllByUserId(@Param("userId") Long userId);
-    
+
+    Optional<Task> findById(Long id);
+
 
     @Modifying
     @Query(value = ASSIGN_TASK, nativeQuery = true)
     void assignTask(@Param("userId") Long userId, @Param("taskId") Long taskId);
-
 
 
 }

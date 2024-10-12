@@ -1,7 +1,18 @@
 
 spring:
+
+  cache:
+    type: redis
+    cache-names: redis-cache
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
   datasource:
-    url: ${DB_URL}
+    url: jdbc:mysql://localhost:3306/${DB_NAME}?currentSchema=${DM_SCHEMA}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,7 +27,7 @@ spring:
 
 security:
   jwt:
-    secret: ${SECRET_KEY}
+    secret: ${JWT_SECRET_KEY}
     access: ${JWT_ACCESS_TIME}
     refresh: ${JWT_REFRESH_TIME}
 
@@ -25,3 +36,9 @@ server:
 
 springdoc:
   override-with-generic-response: false
+
+minio:
+  bucket: ${MINIO_BUCKET}
+  url: ${MINIO_URL}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}

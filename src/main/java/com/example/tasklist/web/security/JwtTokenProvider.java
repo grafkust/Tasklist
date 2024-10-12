@@ -5,6 +5,7 @@ import com.example.tasklist.domain.model.jwt.JwtResponse;
 import com.example.tasklist.domain.model.user.Role;
 import com.example.tasklist.domain.model.user.User;
 import com.example.tasklist.service.UserService;
+import com.example.tasklist.service.props.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -87,8 +88,9 @@ public class JwtTokenProvider {
         if (!isValid(refreshToken))
             throw new AccessDeniedException();
 
-        Long userId = Long.valueOf(getId(refreshToken));
-        User user = userService.getById(userId);
+        String username = getUsername(refreshToken);
+        User user = userService.getByUsername(username);
+        Long userId = user.getId();
         jwtResponse.setId(userId);
         jwtResponse.setUsername(user.getUsername());
 
@@ -114,17 +116,6 @@ public class JwtTokenProvider {
         return claims.getPayload()
                 .getExpiration()
                 .after(new Date());
-    }
-
-    private String getId(String token) {
-
-        return Jwts
-                .parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("id", String.class);
     }
 
     private String getUsername(String token) {

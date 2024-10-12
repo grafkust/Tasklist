@@ -2,6 +2,7 @@ package com.example.tasklist.web.controller;
 
 import com.example.tasklist.domain.dto.user.UserDto;
 import com.example.tasklist.domain.dto.validation.OnCreate;
+import com.example.tasklist.domain.model.jwt.RefreshTokenDto;
 import com.example.tasklist.domain.model.user.User;
 import com.example.tasklist.service.AuthService;
 import com.example.tasklist.service.UserService;
@@ -39,7 +40,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public JwtResponse refresh(@RequestBody String refreshToken) {
+    public JwtResponse refresh(@RequestBody RefreshTokenDto tokenDto) {
+        String refreshToken = tokenDto.getRefreshToken();
         return authService.refresh(refreshToken);
     }
 

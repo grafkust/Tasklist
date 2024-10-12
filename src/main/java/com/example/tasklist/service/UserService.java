@@ -3,32 +3,41 @@ package com.example.tasklist.service;
 import com.example.tasklist.domain.exception.ResourceNotFoundException;
 import com.example.tasklist.domain.model.user.User;
 import com.example.tasklist.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
+    @Cacheable(value = "UserService::getById", key = "#id")
     public User getById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
     }
+
 
     public User getByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
     }
 
+    @Transactional
+    @Caching(put = {
+            @CachePut(value = "UserService::getById", key = "#user.id"),
+            @CachePut(value = "UserService::getByUsername", key = "#user.username")
+    })
     public User update(User user) {
 
         Long id = user.getId();
@@ -46,6 +55,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    @Caching(cacheable = {
+            @Cacheable(value = "UserService::getById", condition = "#user.id!=null", key = "#user.id"),
+            @Cacheable(value = "UserService::getByUsername", condition = "#user.username!=null", key = "#user.username")
+    })
     public User create(User user) {
         checkData(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -53,17 +67,14 @@ public class UserService {
     }
 
     public boolean isTaskOwner(Long userId, Long taskId) {
-        return userRepository.isTaskOwner(userId, taskId);
+        return userRepository.isTaskOwner(userId, taskId) != 0;
     }
 
-    public User getTaskAuthor(Long taskId){
-        return userRepository.findTaskAuthor(taskId).orElseThrow(() -> new ResourceNotFoundException("task author not found"));
+    @Transactional
+    @CacheEvict(value = "UserService::getById", key = "#id")
+    public void delete(Long id) {
+        userRepository.deleteById(id);
     }
-
-    public void delete(Long taskId) {
-        userRepository.deleteById(taskId);
-    }
-
 
     private void checkData(User user) {
         if (!user.getPassword().equals(user.getPasswordConfirmation()))

@@ -10,37 +10,40 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component("customSecurityExpression")
+@Component("cse")
 @RequiredArgsConstructor
 public class CustomSecurityExpression {
 
     private  final UserService userService;
 
     public boolean canAccessUser(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        JwtEntity user = (JwtEntity) authentication.getPrincipal();
-
+        JwtEntity user = getPrincipal();
         Long userId = user.getId();
 
-        return userId.equals(id) || hasAnyRole(authentication, Role.ROLE_ADMIN);
+        return userId.equals(id) || hasAnyRole(Role.ROLE_ADMIN);
     }
 
-    private boolean hasAnyRole(Authentication authentication, Role... roles) {
+    private boolean hasAnyRole(Role... roles) {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
         for (Role role : roles) {
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-            return authentication.getAuthorities().contains(authority);
+            if (authentication.getAuthorities().contains(authority))
+                return true;
         }
         return false;
     }
 
     public boolean canAccessTask(Long taskId) {
+        JwtEntity user = getPrincipal();
+        Long userId = user.getId();
+
+        return userService.isTaskOwner(userId, taskId);
+    }
+
+    private JwtEntity getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtEntity user = (JwtEntity) authentication.getPrincipal();
-        Long id = user.getId();
-
-        return userService.isTaskOwner(id, taskId);
-
+        return (JwtEntity) authentication.getPrincipal();
     }
 
 
