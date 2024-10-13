@@ -1,6 +1,8 @@
 package com.example.tasklist.service;
 
 import com.example.tasklist.domain.exception.ResourceNotFoundException;
+import com.example.tasklist.domain.mail.MailType;
+import com.example.tasklist.domain.model.user.Role;
 import com.example.tasklist.domain.model.user.User;
 import com.example.tasklist.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,9 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
+import java.util.Set;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Cacheable(value = "UserService::getById", key = "#id")
     public User getById(Long id) {
@@ -28,6 +34,7 @@ public class UserService {
     }
 
 
+//    @Cacheable(value = "UserService::getByUsername", key = "#username")
     public User getByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("user not found"));
@@ -58,16 +65,28 @@ public class UserService {
     @Transactional
     @Caching(cacheable = {
             @Cacheable(value = "UserService::getById", condition = "#user.id!=null", key = "#user.id"),
-            @Cacheable(value = "UserService::getByUsername", condition = "#user.username!=null", key = "#user.username")
+            @Cacheable(value = "UserService::getByUsername", key = "#user.username")
     })
     public User create(User user) {
         checkData(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        Set<Role> roles = Set.of(Role.ROLE_USER);
+        user.setRoles(roles);
+        userRepository.save(user);
+        mailService.sendEmail(user, MailType.REGISTRATION, new Properties());
+        return user;
     }
 
+    @Cacheable(value = "UserService::isTaskOwner", condition = "#userId!=null && #taskId!=null",
+            key = "#userId + '.' + #taskId")
     public boolean isTaskOwner(Long userId, Long taskId) {
         return userRepository.isTaskOwner(userId, taskId) != 0;
+    }
+
+    @Cacheable(value = "UserService::getTaskAuthor", key = "#taskId")
+    public User getTaskAuthor(Long taskId){
+        return userRepository.findTaskAuthor(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("task author not found"));
     }
 
     @Transactional

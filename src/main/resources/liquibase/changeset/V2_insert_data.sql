@@ -12,7 +12,7 @@ values ('Buy cheese', null, 'TODO', '2024-09-29 12:00:00'),
        ('Clean rooms', null, 'DONE', null),
        ('Call Mike', 'Ask about meeting', 'TODO', '2024-09-25 00:00:00');
 
---changeset tasklist:3
+
 insert into tasklist.users_tasks (task_id, user_id)
 values (1, 2),
        (2, 2),

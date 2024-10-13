@@ -41,6 +41,7 @@ public class UserController {
     @PreAuthorize("@cse.canAccessUser(#id)")
     public TaskDto createTask(@PathVariable Long id,
                               @Validated(OnCreate.class) @RequestBody TaskDto taskDto) {
+
         Task newTask = taskMapper.toEntity(taskDto);
 
         taskService.create(newTask, id);
@@ -59,8 +60,8 @@ public class UserController {
 
     @GetMapping("/{id}/tasks")
     @PreAuthorize("@cse.canAccessUser(#id)")
-    public List<TaskDto> getTasksByUserId(@PathVariable Long id){
-        List <Task> tasks = taskService.getAllByUserId(id);
+    public List<TaskDto> getTasksByUserId(@PathVariable Long id) {
+        List<Task> tasks = taskService.getAllByUserId(id);
         return taskMapper.toDto(tasks);
     }
 
@@ -69,7 +70,6 @@ public class UserController {
     public void deleteById(@PathVariable Long userId) {
         userService.delete(userId);
     }
-
 
 
 }

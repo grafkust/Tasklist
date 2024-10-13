@@ -12,6 +12,9 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,7 +25,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ImageService imageService;
 
-    @Cacheable(value = "TaskService::getById", key = "#id")
+    @Cacheable(value = "TaskService::getById",condition ="#id!=null" ,key = "#id")
     public Task getById(Long id) {
         return taskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("task not found"));
     }
@@ -38,6 +41,7 @@ public class TaskService {
     }
 
     @Transactional
+    @Cacheable(value = "TaskService::getById",condition ="#task.id!=null" ,key = "#task.id")
     public Task create(Task task, Long userId) {
 
         if (task.getStatus() == null)
@@ -65,4 +69,9 @@ public class TaskService {
     }
 
 
+
+    public List<Task> getAllSoonTasks(Duration duration) {
+        LocalDateTime now = LocalDateTime.now();
+        return taskRepository.findAllSoonTasks(Timestamp.valueOf(now), Timestamp.valueOf(now.plus(duration)));
+    }
 }

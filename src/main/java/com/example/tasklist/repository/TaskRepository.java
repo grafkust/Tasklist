@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     String ASSIGN_TASK = "INSERT INTO users_tasks (user_id, task_id) VALUES (:userId, :taskId)";
 
+    String FIND_ALL_SOON_TASKS = """
+            SELECT * FROM tasks t WHERE t.expiration_date is not null
+            AND t.expiration_date between :start AND :end
+            """;
+
     @Query(value = FIND_ALL_BY_USER_ID, nativeQuery = true)
     List<Task> findAllByUserId(@Param("userId") Long userId);
 
@@ -31,4 +37,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     void assignTask(@Param("userId") Long userId, @Param("taskId") Long taskId);
 
 
+    @Query(value = FIND_ALL_SOON_TASKS, nativeQuery = true)
+    List<Task> findAllSoonTasks(@Param("start") Timestamp start, @Param("end")Timestamp end);
 }
